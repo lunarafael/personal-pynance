@@ -9,3 +9,7 @@ class CategoryListCreateView(generics.ListCreateAPIView):
 class TransactionListCreateView(generics.ListCreateAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
+
+class TransactionDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer

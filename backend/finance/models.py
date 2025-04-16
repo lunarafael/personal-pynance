@@ -2,24 +2,26 @@ from django.db import models
 from django.conf import settings
 
 class Category(models.Model):
-    nome = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default='Outros')
+    slug = models.SlugField(max_length=50, unique=True, null=True, blank=True)
 
     def __str__(self):
-        return self.nome
+        return self.name
 
 
 class Transaction(models.Model):
-    TIPO_CHOICES = (
-        ('entrada', 'Entrada'),
-        ('saida', 'Saída'),
+    TYPE_CHOICES = (
+        ('income', 'Income'),
+        ('expense', 'Expense'),
     )
 
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    categoria = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=False)
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    descricao = models.CharField(max_length=255, blank=True)
-    data = models.DateField()
+    transaction_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=False)
+    transaction_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    desc = models.CharField(max_length=255, blank=True)
+    date = models.DateField()
 
     def __str__(self):
-        return f"{self.usuario.username} - {self.tipo} - R${self.valor}"
+        return f"ID: {self.transaction_id} - User: {self.user.username} - Type: {self.transaction_type} - Value: {self.value} - Date: {self.date}"

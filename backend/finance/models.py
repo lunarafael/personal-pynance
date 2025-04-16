@@ -11,8 +11,8 @@ class Category(models.Model):
 
 class Transaction(models.Model):
     TIPO_CHOICES = (
-        ('entrada', 'Entrada'),
-        ('saida', 'Saída'),
+        ('income', 'Income'),
+        ('expense', 'Expense'),
     )
 
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

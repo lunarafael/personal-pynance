@@ -7,10 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 @pytest.fixture
-def create_category():
-    logger.info("Criando categoria de teste...")
-    category = Category.objects.create(name="Alimentacao")
-    logger.info(f"Categoria criada: {category}")
+def get_existing_category():
+    logger.info("Buscando categoria existente para o teste...")
+    category = Category.objects.first()
+    if not category:
+        pytest.fail("Nenhuma categoria foi encontrada no banco de dados. Verifique as migrações ou fixtures.")
+    logger.info(f"Categoria utilizada: {category}")
     return category
 
 @pytest.fixture
@@ -24,14 +26,14 @@ def auth_client():
     return client, user
 
 @pytest.mark.django_db
-def test_create_transaction_with_invalid_value(auth_client, create_category):
+def test_create_transaction_with_invalid_value(auth_client, get_existing_category):
     logger.info("Iniciando teste de transação com valor inválido...")
     
     client, user = auth_client
 
     # Valor inválido (negativo)
     data = {
-        "category": create_category.id,
+        "category": get_existing_category.id,
         "transaction_type": "income",
         "value": -100.00,
         "desc": "Salário",
@@ -47,14 +49,14 @@ def test_create_transaction_with_invalid_value(auth_client, create_category):
     logger.info("Teste de transação com valor inválido finalizado.")
 
 @pytest.mark.django_db
-def test_create_transaction_with_missing_field(auth_client, create_category):
+def test_create_transaction_with_missing_field(auth_client, get_existing_category):
     logger.info("Iniciando teste de transação com campo ausente...")
 
     client, user = auth_client
 
     # Campo obrigatório faltando (data)
     data = {
-        "category": create_category.id,
+        "category": get_existing_category.id,
         "transaction_type": "income",
         "value": 100.00,
         "desc": "Salário"
